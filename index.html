@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wolf Panel – Buy Ticket</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:'Rajdhani',sans-serif;
+background:linear-gradient(135deg,#000,#12122a,#0f3460);
+color:#fff;
+}
+
+.container{max-width:900px;margin:auto;padding:20px}
+
+h1{
+font-family:'Orbitron';
+text-align:center;
+margin:30px 0;
+background:linear-gradient(90deg,#4cc9f0,#f72585);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+.card{
+background:rgba(20,20,40,.85);
+padding:25px;
+border-radius:15px;
+border-top:4px solid #4cc9f0;
+text-align:center;
+}
+
+.price{
+font-size:2.2rem;
+font-weight:900;
+color:#4cc9f0;
+margin:10px 0;
+}
+
+.btn{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+font-family:'Orbitron';
+cursor:pointer;
+transition:.3s;
+}
+
+.btn:hover{opacity:.9}
+
+.buy{background:#4361ee;color:#fff}
+.pay{background:#22c55e;color:#000}
+.close{background:#333;color:#fff}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.9);
+display:flex;
+align-items:center;
+justify-content:center;
+opacity:0;
+visibility:hidden;
+transition:.3s;
+z-index:1000;
+}
+.modal.active{opacity:1;visibility:visible}
+
+.box{
+background:#0f172a;
+padding:25px;
+border-radius:15px;
+width:90%;
+max-width:450px;
+border:2px solid #4cc9f0;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:8px;
+border-radius:8px;
+border:none;
+font-family:inherit;
+}
+
+.qr{
+width:220px;
+margin:10px auto;
+display:block;
+border-radius:10px;
+border:2px solid #4cc9f0;
+}
+
+.note{
+background:rgba(255,193,7,.15);
+border-left:4px solid #ffc107;
+padding:10px;
+margin-top:10px;
+font-size:.9rem;
+}
+
+.admin{
+margin-top:30px;
+border-top:1px solid #444;
+padding-top:20px;
+}
+
+.order{
+background:#020617;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+font-size:.9rem;
+}
+
+.status{font-weight:bold}
+.pending{color:#ffc107}
+.approved{color:#22c55e}
+.rejected{color:#ef4444}
+
+/* ACCESS MESSAGE */
+.access-msg{
+background:rgba(76,201,240,.15);
+border-left:4px solid #4cc9f0;
+padding:10px;
+margin:20px 0;
+font-size:.95rem;
+border-radius:8px;
+}
+
+/* Responsive */
+@media(max-width:600px){.cards{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>WOLF PANEL – BUY TICKET</h1>
+
+<!-- ACCESS GRANTED MESSAGE -->
+<div id="accessMsg"></div>
+
+<div class="cards">
+<div class="card">
+<h3>15 DAYS</h3>
+<div class="price">₹80</div>
+<button class="btn buy" onclick="openPay('15 Days',80)">BUY TICKET</button>
+</div>
+
+<div class="card">
+<h3>1 MONTH</h3>
+<div class="price">₹150</div>
+<button class="btn buy" onclick="openPay('1 Month',150)">BUY TICKET</button>
+</div>
+
+<div class="card">
+<h3>2 MONTHS</h3>
+<div class="price">₹250</div>
+<button class="btn buy" onclick="openPay('2 Months',250)">BUY TICKET</button>
+</div>
+
+<div class="card">
+<h3>PERMANENT</h3>
+<div class="price">₹500</div>
+<button class="btn buy" onclick="openPay('Permanent',500)">BUY TICKET</button>
+</div>
+</div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+  <div class="box">
+    <h3>Sign in with Gmail</h3>
+    <button class="btn pay" onclick="loginGmail()">
+      <i class="fab fa-google"></i> Sign in with Google
+    </button>
+    <button class="btn close" onclick="closeLogin()">Cancel</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal" id="payModal">
+<div class="box">
+<h3 id="pkgText"></h3>
+
+<img id="qrImg" class="qr">
+
+<button class="btn pay" onclick="payUPI()">PAY NOW</button>
+
+<hr style="margin:10px 0">
+
+<label>UTR / Transaction ID</label>
+<input id="utr" placeholder="Enter UTR">
+
+<label>Payment Screenshot</label>
+<input type="file" id="shot">
+
+<button class="btn buy" onclick="submitProof()">SUBMIT FOR VERIFICATION</button>
+
+<div class="note">
+✔ Pay exact amount only<br>
+✔ Fake UTR = reject<br>
+✔ Access after admin approval
+</div>
+
+<button class="btn close" onclick="closePay()">Close</button>
+</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="container admin" id="adminPanel" style="display:none">
+<h2>ADMIN VERIFICATION PANEL</h2>
+<div id="orders"></div>
+</div>
+
+<script>
+/* SETTINGS */
+const upiID = "pranav2008@ptaxis";
+const adminPassword = "wolfadmin";
+
+let amount=0, pkg="";
+
+/* GMAIL LOGIN FLOW */
+function loginGmail(){
+  const email = prompt("Enter your Gmail ID to login:");
+  if(!email || !email.includes("@gmail.com")) return alert("Enter valid Gmail ID");
+  
+  localStorage.setItem("userEmail", email);
+  alert("Logged in as " + email);
+  closeLogin();
+  showAccess(); // check approved orders after login
+}
+
+function closeLogin(){loginModal.classList.remove("active")}
+
+/* BUY BUTTON FLOW */
+function openPay(p,a){
+  const userEmail = localStorage.getItem("userEmail");
+  if(!userEmail){
+    loginModal.classList.add("active");
+    return;
+  }
+
+  pkg=p; amount=a;
+  pkgText.innerText = `${pkg} – ₹${amount}`;
+  qrImg.src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiID}&pn=Wolf Panel&am=${amount}&cu=INR&tn=Buy Ticket`;
+  payModal.classList.add("active");
+}
+
+function closePay(){payModal.classList.remove("active")}
+
+function payUPI(){
+  location.href=`upi://pay?pa=${upiID}&pn=Wolf Panel&am=${amount}&cu=INR&tn=${pkg}`;
+}
+
+function submitProof(){
+  const utr=document.getElementById("utr").value.trim();
+  if(!utr){alert("Enter UTR");return}
+  const userEmail = localStorage.getItem("userEmail");
+  if(!userEmail){alert("Please login first"); return;}
+
+  const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+  orders.push({
+    id:Date.now(),
+    userEmail,
+    pkg,amount,utr,
+    status:"Pending"
+  });
+  localStorage.setItem("orders",JSON.stringify(orders));
+  alert("Payment submitted. Status: Pending");
+  closePay();
+  showAccess(); // refresh access message
+}
+
+/* ADMIN FLOW */
+if(location.hash==="#admin"){
+  const pass=prompt("Admin Password:");
+  if(pass===adminPassword){
+    adminPanel.style.display="block";
+    renderOrders();
+  }else{alert("Wrong password")}
+}
+
+function renderOrders(){
+  const data=JSON.parse(localStorage.getItem("orders")||"[]");
+  orders.innerHTML="";
+  data.forEach(o=>{
+    orders.innerHTML+=`
+    <div class="order">
+      User: ${o.userEmail}<br>
+      Package: ${o.pkg} | ₹${o.amount}<br>
+      UTR: ${o.utr}<br>
+      Status: <span class="status ${o.status.toLowerCase()}">${o.status}</span><br>
+      <button onclick="updateStatus(${o.id},'Approved')">Approve</button>
+      <button onclick="updateStatus(${o.id},'Rejected')">Reject</button>
+    </div>`;
+  });
+}
+
+function updateStatus(id,status){
+  let data=JSON.parse(localStorage.getItem("orders"));
+  data=data.map(o=>o.id===id?{...o,status}:o);
+  localStorage.setItem("orders",JSON.stringify(data));
+  renderOrders();
+}
+
+/* ACCESS MESSAGE FOR USERS */
+function showAccess(){
+  const userEmail = localStorage.getItem("userEmail");
+  const allOrders = JSON.parse(localStorage.getItem("orders")||"[]");
+  const approved = allOrders.filter(o=>o.userEmail===userEmail && o.status==="Approved");
+  const div = document.getElementById("accessMsg");
+  if(approved.length>0){
+    let html = `<div class="access-msg"><i class="fas fa-check-circle"></i> Access Granted for packages:<ul>`;
+    approved.forEach(o=>{html+=`<li>${o.pkg} – ₹${o.amount}</li>`});
+    html += `</ul></div>`;
+    div.innerHTML=html;
+  }else{
+    div.innerHTML="";
+  }
+}
+
+/* Show access message on page load */
+window.onload=showAccess;
+
+</script>
+
+</body>
+</html>
