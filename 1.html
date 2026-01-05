@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WOLF PANEL – Premium Access</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+/* General */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',Arial,sans-serif;background:#121212;color:#fff;min-height:100vh;overflow-x:hidden;}
+.header{text-align:center;padding:60px 20px;}
+.header h1{font-size:3rem;font-weight:900;background:linear-gradient(45deg,#ff0080,#00ff80);-webkit-background-clip:text;color:transparent;margin-bottom:15px;}
+.header p{color:#a0aec0;font-size:1.1rem;}
+.container{max-width:1200px;margin:0 auto;padding:0 20px 60px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;margin-top:40px}
+
+/* Cards */
+.premium-card{background:rgba(30,30,40,0.85);backdrop-filter:blur(10px);border-radius:20px;padding:25px;text-align:center;border:2px solid rgba(255,255,255,0.1);transition:0.3s;position:relative;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.3)}
+.premium-card:hover{transform:translateY(-5px) scale(1.03);border-color:#ff0080;box-shadow:0 15px 40px rgba(255,0,128,0.2)}
+.card-badge{position:absolute;top:15px;right:15px;background:linear-gradient(45deg,#ff0080,#8000ff);padding:5px 15px;border-radius:20px;font-size:0.8rem;font-weight:600}
+.card-icon{font-size:3rem;margin-bottom:20px;background:linear-gradient(45deg,#ff0080,#8000ff);-webkit-background-clip:text;color:transparent;height:70px;display:flex;align-items:center;justify-content:center}
+.card-title{font-size:1.6rem;font-weight:700;margin-bottom:10px}
+.card-price{font-size:2.2rem;font-weight:800;background:linear-gradient(45deg,#00ff80,#0080ff);-webkit-background-clip:text;color:transparent;margin:15px 0;display:inline-block;position:relative}
+.card-price::before{content:'₹';position:absolute;left:-20px;top:5px;font-size:1.1rem}
+.card-features{list-style:none;text-align:left;margin:20px 0;padding:0}
+.card-features li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1);padding-left:25px;position:relative;color:#cbd5e0;font-weight:600}
+.card-features li::before{content:'✓';position:absolute;left:0;color:#00ff80;font-weight:bold}
+.card-notes{margin-top:10px;font-size:0.9rem;color:#ffdc00;font-weight:700;text-align:left}
+.purchase-btn{background:linear-gradient(45deg,#ff0080,#8000ff);color:#fff;padding:12px 20px;border:none;width:100%;border-radius:12px;font-weight:600;cursor:pointer;transition:0.3s;text-transform:uppercase}
+.purchase-btn:hover{opacity:0.9}
+
+/* Popular card */
+.popular-card{border:2px solid #ff0080;transform:scale(1.05)}
+.popular-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(45deg,#ff0080,#8000ff);padding:5px 20px;border-radius:20px;font-size:0.8rem;font-weight:700;box-shadow:0 5px 15px rgba(255,0,128,0.3);z-index:10}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:1000}
+.modal-overlay.active{display:flex}
+.modal-content{background:rgba(30,30,46,0.95);width:90%;max-width:450px;padding:30px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 25px 50px rgba(0,0,0,0.5)}
+.modal-header{text-align:center;margin-bottom:20px}
+.modal-title{font-size:1.8rem;font-weight:700;background:linear-gradient(45deg,#ff0080,#00ff80);-webkit-background-clip:text;color:transparent;margin-bottom:5px}
+.modal-subtitle{color:#a0aec0;font-size:1rem}
+.qr-container{text-align:center;margin:20px 0;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px}
+.qr-code{width:200px;height:200px;border:3px solid #00ff80;border-radius:12px;background:#fff;padding:10px}
+.form-group{margin-bottom:15px}
+.form-label{display:block;margin-bottom:5px;color:#00ff80;font-weight:600;font-size:0.9rem}
+.form-input{width:100%;padding:12px 15px;background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;transition:0.3s}
+.form-input:focus{outline:none;border-color:#ff0080;background:rgba(255,255,255,0.1);box-shadow:0 0 15px rgba(255,0,128,0.2)}
+.submit-btn{background:linear-gradient(45deg,#ff0080,#8000ff);margin-top:10px}
+.close-btn{background:rgba(255,255,255,0.1);color:#a0aec0;margin-top:10px}
+.close-btn:hover{background:rgba(255,255,255,0.2)}
+
+/* Admin Panel */
+.admin-section{margin-top:50px;padding-top:40px;border-top:1px solid rgba(255,255,255,0.1);}
+.admin-header{text-align:center;margin-bottom:20px}
+.admin-title{font-size:1.8rem;font-weight:700;background:linear-gradient(45deg,#ff0080,#8000ff);-webkit-background-clip:text;color:transparent;margin-bottom:5px}
+.admin-login{max-width:400px;margin:0 auto 20px;background:rgba(255,255,255,0.05);padding:20px;border-radius:12px;}
+.admin-orders{display:grid;gap:15px}
+.order-card{background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;border-left:4px solid #ff0080}
+.order-status{display:inline-block;padding:5px 10px;border-radius:20px;font-weight:600;font-size:0.8rem;margin-left:10px}
+.status-pending{background:rgba(255,170,0,0.2);color:#ffaa00}
+.status-approved{background:rgba(0,255,128,0.2);color:#00ff80}
+.status-rejected{background:rgba(255,0,128,0.2);color:#ff0080}
+.order-actions{display:flex;gap:10px;margin-top:10px}
+.action-btn{padding:8px 15px;border-radius:8px;border:none;font-weight:600;cursor:pointer;flex:1}
+.approve-btn{background:linear-gradient(45deg,#00ff80,#0080ff);color:#000}
+.reject-btn{background:linear-gradient(45deg,#ff0080,#8000ff);color:#fff}
+
+/* Footer */
+.footer{text-align:center;padding:20px 20px;color:#a0aec0;border-top:1px solid rgba(255,255,255,0.1);margin-top:50px}
+.footer-logo{font-size:1.5rem;font-weight:900;background:linear-gradient(45deg,#ff0080,#8000ff);-webkit-background-clip:text;color:transparent;margin-bottom:10px}
+
+@media(max-width:768px){.cards-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+<h1>WOLF PANEL</h1>
+<p>Unlock premium features instantly</p>
+</div>
+
+<!-- Premium Plans -->
+<div class="container">
+<div class="cards-grid">
+
+<!-- Cards -->
+<div class="premium-card" data-title="15 DAYS ACCESS" data-price="150">
+<div class="card-badge">BASIC</div>
+<div class="card-icon"><i class="fas fa-rocket"></i></div>
+<h3 class="card-title">15 DAYS ACCESS</h3>
+<div class="card-price">₹150</div>
+<ul class="card-features">
+<li>Enemy location</li>
+<li>Gun location</li>
+<li>Invisible glowwall</li>
+<li>Drag headshot</li>
+</ul>
+<div class="card-notes">Main ID safe • Antiban</div>
+<button class="purchase-btn">GET STARTED</button>
+</div>
+
+<div class="premium-card popular-card" data-title="1 MONTH ACCESS" data-price="300">
+<div class="popular-tag">MOST POPULAR</div>
+<div class="card-badge">PRO</div>
+<div class="card-icon"><i class="fas fa-crown"></i></div>
+<h3 class="card-title">1 MONTH ACCESS</h3>
+<div class="card-price">₹300</div>
+<ul class="card-features">
+<li>Enemy location</li>
+<li>Gun location</li>
+<li>Invisible glowwall</li>
+<li>Drag headshot</li>
+</ul>
+<div class="card-notes">Main ID safe • Antiban</div>
+<button class="purchase-btn">CHOOSE PLAN</button>
+</div>
+
+<div class="premium-card" data-title="2 MONTHS ACCESS" data-price="450">
+<div class="card-badge">ADVANCED</div>
+<div class="card-icon"><i class="fas fa-gem"></i></div>
+<h3 class="card-title">2 MONTHS ACCESS</h3>
+<div class="card-price">₹450</div>
+<ul class="card-features">
+<li>Enemy location</li>
+<li>Gun location</li>
+<li>Invisible glowwall</li>
+<li>Drag headshot</li>
+</ul>
+<div class="card-notes">Main ID safe • Antiban</div>
+<button class="purchase-btn">GET ADVANTAGE</button>
+</div>
+
+<div class="premium-card" data-title="LIFETIME ACCESS" data-price="1000">
+<div class="card-badge">ULTIMATE</div>
+<div class="card-icon"><i class="fas fa-infinity"></i></div>
+<h3 class="card-title">LIFETIME ACCESS</h3>
+<div class="card-price">₹1000</div>
+<ul class="card-features">
+<li>Enemy location</li>
+<li>Gun location</li>
+<li>Invisible glowwall</li>
+<li>Drag headshot</li>
+</ul>
+<div class="card-notes">Main ID safe • Antiban</div>
+<button class="purchase-btn">GET LIFETIME</button>
+</div>
+
+</div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="modalPackageTitle"></h2>
+<p class="modal-subtitle">Complete your payment to activate your premium access</p>
+</div>
+<div class="qr-container">
+<img id="qrCodeImage" class="qr-code" alt="QR Code">
+</div>
+<div class="form-group">
+<label class="form-label">TRANSACTION UTR / REFERENCE NUMBER</label>
+<input type="text" class="form-input" id="transactionUTR" placeholder="Enter UTR/Reference number">
+</div>
+<div class="form-group">
+<label class="form-label">CONTACT PHONE NUMBER</label>
+<input type="tel" class="form-input" id="contactPhone" placeholder="Enter WhatsApp number">
+</div>
+<div class="form-group">
+<label class="form-label">EMAIL ADDRESS FOR CONFIRMATION</label>
+<input type="email" class="form-input" id="contactEmail" placeholder="Enter email">
+</div>
+<button class="purchase-btn submit-btn" onclick="submitPaymentRequest()">SUBMIT FOR VERIFICATION</button>
+<button class="purchase-btn close-btn" onclick="closePaymentModal()">CANCEL</button>
+</div>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-section">
+<div class="admin-header">
+<h2 class="admin-title">ADMIN PANEL</h2>
+<p>Manage payment requests</p>
+</div>
+
+<div class="admin-login">
+<div class="form-group">
+<label class="form-label">ADMIN PASSWORD</label>
+<input type="password" class="form-input" id="adminPassword" placeholder="Enter admin password">
+</div>
+<button class="purchase-btn" onclick="accessAdminPanel()">ACCESS PANEL</button>
+</div>
+
+<div id="adminOrdersContainer" class="admin-orders"></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+<div class="footer-logo">WOLF PANEL</div>
+<p>Premium Access | UPI: pranav2008@ptaxis</p>
+</div>
+
+<script>
+// Firebase
+const firebaseConfig = {apiKey:"AIzaSyAibgTvvYMhyWPatChKDHFmiz7cQEi-ylg",authDomain:"wolf-panel-2307d.firebaseapp.com",projectId:"wolf-panel-2307d"};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let currentPackage="",currentAmount=0;
+const upiID="pranav2008@ptaxis";
+
+// Open Modal
+document.querySelectorAll('.premium-card').forEach(card=>{
+card.querySelector('button').addEventListener('click',()=>{
+currentPackage=card.dataset.title;
+currentAmount=card.dataset.price;
+document.getElementById('modalPackageTitle').textContent=`${currentPackage} - ₹${currentAmount}`;
+document.getElementById('qrCodeImage').src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiID}&am=${currentAmount}&cu=INR&pn=Wolf%20Panel`;
+document.getElementById('transactionUTR').value='';
+document.getElementById('contactPhone').value='';
+document.getElementById('contactEmail').value='';
+document.getElementById('paymentModal').classList.add('active');
+});
+});
+
+function closePaymentModal(){document.getElementById('paymentModal').classList.remove('active');}
+
+// Submit
+function validateEmail(email){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
+async function submitPaymentRequest(){
+const utr=document.getElementById('transactionUTR').value.trim();
+const phone=document.getElementById('contactPhone').value.trim();
+const email=document.getElementById('contactEmail').value.trim();
+if(!utr||!phone||!email){alert('Fill all fields');return;}
+if(phone.length!==10||isNaN(phone)){alert('Enter valid 10-digit phone');return;}
+if(!validateEmail(email)){alert('Enter valid email');return;}
+await db.collection('payments').add({package:currentPackage,amount:currentAmount,utr,phone,email,status:'Pending',timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+alert('Payment request submitted!');
+closePaymentModal();
+}
+
+// Admin
+function accessAdminPanel(){
+const pwd=document.getElementById('adminPassword').value;
+if(pwd!=="wolfadmin123"){alert("Wrong password");return;}
+db.collection('payments').orderBy('timestamp','desc').get().then(snapshot=>{
+const container=document.getElementById('adminOrdersContainer');container.innerHTML='';
+snapshot.forEach(doc=>{
+const data=doc.data();
+const card=document.createElement('div');card.classList.add('order-card');
+card.innerHTML=`<strong>${data.package} - ₹${data.amount}</strong>
+<p>${data.phone} | ${data.email}</p>
+<span class="order-status status-${data.status.toLowerCase()}">${data.status}</span>`;
+container.appendChild(card);
+});
+});
+}
+</script>
+
+</body>
+</html>
