@@ -4,39 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wolf Panel – Buy Ticket</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Rajdhani',sans-serif;background:linear-gradient(135deg,#000,#12122a,#0f3460);color:#fff;}
+body{font-family:'Rajdhani',sans-serif;background:linear-gradient(135deg,#000,#12122a,#0f3460);color:#fff}
 .container{max-width:900px;margin:auto;padding:20px}
-h1{font-family:'Orbitron';text-align:center;margin:30px 0;background:linear-gradient(90deg,#4cc9f0,#f72585);-webkit-background-clip:text;color:transparent;}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;}
-.card{background:rgba(20,20,40,.85);padding:25px;border-radius:15px;border-top:4px solid #4cc9f0;text-align:center;}
-.price{font-size:2.2rem;font-weight:900;color:#4cc9f0;margin:10px 0;}
-.btn{width:100%;padding:14px;margin-top:10px;border:none;border-radius:10px;font-family:'Orbitron';cursor:pointer;}
+h1{font-family:'Orbitron';text-align:center;margin:30px 0;background:linear-gradient(90deg,#4cc9f0,#f72585);-webkit-background-clip:text;color:transparent}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.card{background:rgba(20,20,40,.85);padding:25px;border-radius:15px;border-top:4px solid #4cc9f0;text-align:center}
+.price{font-size:2.2rem;font-weight:900;color:#4cc9f0;margin:10px 0}
+.btn{width:100%;padding:14px;margin-top:10px;border:none;border-radius:10px;font-family:'Orbitron';cursor:pointer}
 .buy{background:#4361ee;color:#fff}
 .pay{background:#22c55e;color:#000}
 .close{background:#333;color:#fff}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:.3s;z-index:1000;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:.3s;z-index:1000}
 .modal.active{opacity:1;visibility:visible}
-.box{background:#0f172a;padding:25px;border-radius:15px;width:90%;max-width:450px;border:2px solid #4cc9f0;}
-input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:none;font-family:inherit;}
-.qr{width:220px;margin:10px auto;display:block;border-radius:10px;border:2px solid #4cc9f0;}
-.note{background:rgba(255,193,7,.15);border-left:4px solid #ffc107;padding:10px;margin-top:10px;font-size:.9rem;}
-.admin{margin-top:30px;border-top:1px solid #444;padding-top:20px;}
-.order{background:#020617;padding:10px;margin-top:10px;border-radius:8px;font-size:.9rem;}
+.box{background:#0f172a;padding:25px;border-radius:15px;width:90%;max-width:450px;border:2px solid #4cc9f0}
+input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:none;font-family:inherit}
+.qr{width:220px;margin:10px auto;display:block;border-radius:10px;border:2px solid #4cc9f0}
+.note{background:rgba(255,193,7,.15);border-left:4px solid #ffc107;padding:10px;margin-top:10px;font-size:.9rem}
+.admin{margin-top:30px;border-top:1px solid #444;padding-top:20px}
+.order{background:#020617;padding:10px;margin-top:10px;border-radius:8px;font-size:.9rem}
 .status{font-weight:bold}
 .pending{color:#ffc107}
 .approved{color:#22c55e}
 .rejected{color:#ef4444}
 </style>
 </head>
-
 <body>
 
-<div class="container" id="mainContent" style="display:none">
+<div class="container" id="mainContent">
 <h1>WOLF PANEL – BUY TICKET</h1>
 
 <div class="cards">
@@ -76,7 +76,7 @@ input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:n
 <label>UTR / Transaction ID</label>
 <input id="utr" placeholder="Enter UTR">
 <label>Phone Number</label>
-<input id="phone" placeholder="Enter Phone Number">
+<input id="phone" placeholder="Enter your phone number">
 <label>Payment Screenshot</label>
 <input type="file" id="shot">
 <button class="btn buy" onclick="submitProof()">SUBMIT FOR VERIFICATION</button>
@@ -95,92 +95,64 @@ input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:n
 <div id="orders"></div>
 </div>
 
-<!-- GOOGLE LOGIN BUTTON (hidden, automatic) -->
-<div id="gSignInDiv"></div>
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <script>
+/* 🔐 SETTINGS */
 const upiID = "pranav2008@ptaxis";
 const adminPassword = "wolfadmin";
-let amount=0, pkg="", userEmail="";
+let amount=0, pkg="";
 
-// --- GOOGLE LOGIN FLOW ---
-function handleCredentialResponse(response){
-    const payload = JSON.parse(atob(response.credential.split(".")[1]));
-    userEmail = payload.email;
-    // show main content after login
-    document.getElementById("mainContent").style.display = "block";
-    alert(`Logged in as: ${userEmail}`);
-}
-
-// initialize Google login
-window.onload = () => {
-    google.accounts.id.initialize({
-        client_id: "1030764936904-ajbg3ce9utrg4vh5mv6m70mjf1n0voms.apps.googleusercontent.com",
-        callback: handleCredentialResponse,
-        ux_mode: "popup",
-        login_uri: "https://user140900.github.io/WOLF-PANEL/"
-    });
-    google.accounts.id.prompt(); // auto popup
-}
-
-// --- USER FLOW ---
+/* USER FLOW */
 function openPay(p,a){
-    pkg=p; amount=a;
-    document.getElementById("pkgText").innerText=`${pkg} – ₹${amount}`;
-    document.getElementById("qrImg").src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiID}&pn=Wolf Panel&am=${amount}&cu=INR&tn=Buy Ticket`;
-    document.getElementById("payModal").classList.add("active");
+pkg=p; amount=a;
+pkgText.innerText = `${pkg} – ₹${amount}`;
+qrImg.src =
+`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiID}&pn=Wolf Panel&am=${amount}&cu=INR&tn=Buy Ticket`;
+payModal.classList.add("active");
 }
 
-function closePay(){document.getElementById("payModal").classList.remove("active")}
-
-function payUPI(){location.href=`upi://pay?pa=${upiID}&pn=Wolf Panel&am=${amount}&cu=INR&tn=${pkg}`;}
+function closePay(){payModal.classList.remove("active")}
+function payUPI(){
+location.href=`upi://pay?pa=${upiID}&pn=Wolf Panel&am=${amount}&cu=INR&tn=${pkg}`;
+}
 
 function submitProof(){
-    const utr=document.getElementById("utr").value.trim();
-    const phone=document.getElementById("phone").value.trim();
-    if(!utr){alert("Enter UTR"); return;}
-    if(!phone){alert("Enter Phone Number"); return;}
-
-    const orders=JSON.parse(localStorage.getItem("orders")||"[]");
-    orders.push({id:Date.now(),pkg,amount,utr,phone,status:"Pending"});
-    localStorage.setItem("orders",JSON.stringify(orders));
-    alert("Payment submitted. Status: Pending");
-    closePay();
+const utr=document.getElementById("utr").value.trim();
+const phone=document.getElementById("phone").value.trim();
+if(!utr||!phone){alert("Enter UTR and phone");return}
+const orders=JSON.parse(localStorage.getItem("orders")||"[]");
+orders.push({id:Date.now(),pkg,amount,utr,phone,status:"Pending"});
+localStorage.setItem("orders",JSON.stringify(orders));
+alert("Payment submitted. Status: Pending");
+closePay();
 }
 
-// --- ADMIN FLOW ---
+/* ADMIN FLOW */
 if(location.hash==="#admin"){
-    const pass=prompt("Admin Password:");
-    if(pass===adminPassword){
-        document.getElementById("adminPanel").style.display="block";
-        renderOrders();
-    }else{alert("Wrong password");}
+const pass=prompt("Admin Password:");
+if(pass===adminPassword){adminPanel.style.display="block";renderOrders();}
+else{alert("Wrong password");}
 }
 
 function renderOrders(){
-    const data=JSON.parse(localStorage.getItem("orders")||"[]");
-    const ordersDiv=document.getElementById("orders");
-    ordersDiv.innerHTML="";
-    data.forEach(o=>{
-        ordersDiv.innerHTML+=`
+const data=JSON.parse(localStorage.getItem("orders")||"[]");
+orders.innerHTML="";
+data.forEach(o=>{
+orders.innerHTML+=`
 <div class="order">
 Package: ${o.pkg} | ₹${o.amount}<br>
-UTR: ${o.utr}<br>
-Phone: ${o.phone}<br>
+UTR: ${o.utr} | Phone: ${o.phone}<br>
 Status: <span class="status ${o.status.toLowerCase()}">${o.status}</span><br>
 <button onclick="updateStatus(${o.id},'Approved')">Approve</button>
 <button onclick="updateStatus(${o.id},'Rejected')">Reject</button>
 </div>`;
-    });
+});
 }
 
 function updateStatus(id,status){
-    let data=JSON.parse(localStorage.getItem("orders"));
-    data=data.map(o=>o.id===id?{...o,status}:o);
-    localStorage.setItem("orders",JSON.stringify(data));
-    renderOrders();
+let data=JSON.parse(localStorage.getItem("orders"));
+data=data.map(o=>o.id===id?{...o,status}:o);
+localStorage.setItem("orders",JSON.stringify(data));
+renderOrders();
 }
 </script>
 
