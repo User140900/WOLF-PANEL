@@ -2,130 +2,222 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>WOLF PANEL</title>
+<title>WOLF PANEL – Buy Ticket</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
+*{box-sizing:border-box}
 body{
-  font-family: Arial, sans-serif;
+  margin:0;
+  font-family:Arial, sans-serif;
   background:#020617;
   color:#fff;
-  padding:20px;
 }
-h2{margin-top:30px}
-input,button{
+.container{max-width:900px;margin:auto;padding:20px}
+h1{text-align:center;margin-bottom:20px}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+.card{
+  background:#0f172a;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+}
+.price{font-size:24px;color:#22c55e}
+button{
+  padding:10px;
+  width:100%;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:10px;
+  font-weight:bold;
+}
+.buy{background:#2563eb;color:#fff}
+.pay{background:#22c55e;color:#000}
+.close{background:#374151;color:#fff}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+.modal.active{display:flex}
+.box{
+  background:#020617;
+  padding:20px;
+  border-radius:10px;
+  width:90%;
+  max-width:420px;
+}
+input{
   width:100%;
   padding:10px;
-  margin:6px 0;
+  margin-top:8px;
   border-radius:6px;
   border:none;
 }
-button{cursor:pointer;font-weight:bold}
-.card{
+
+.qr{
+  width:220px;
+  display:block;
+  margin:10px auto;
+}
+
+.admin{
+  margin-top:40px;
+  border-top:1px solid #334155;
+  padding-top:20px;
+}
+.order{
   background:#0f172a;
-  padding:15px;
-  margin:10px 0;
+  padding:12px;
+  margin-top:10px;
   border-radius:8px;
-  border-left:4px solid #22c55e;
 }
 .approve{background:#22c55e;color:#000}
 .reject{background:#ef4444;color:#fff}
-.admin-box{border:1px solid #22c55e;padding:15px;border-radius:8px}
 </style>
 </head>
 
 <body>
 
-<h2>🎟 Buy Ticket</h2>
+<div class="container">
+<h1>WOLF PANEL – BUY TICKET</h1>
 
-<input id="name" placeholder="Your Name">
-<input id="phone" placeholder="Phone Number">
-<input id="utr" placeholder="UTR / Transaction ID">
+<!-- PACKAGES -->
+<div class="cards">
+  <div class="card">
+    <h3>15 DAYS</h3>
+    <div class="price">₹80</div>
+    <button class="buy" onclick="openPay('15 Days',80)">BUY TICKET</button>
+  </div>
+  <div class="card">
+    <h3>1 MONTH</h3>
+    <div class="price">₹150</div>
+    <button class="buy" onclick="openPay('1 Month',150)">BUY TICKET</button>
+  </div>
+  <div class="card">
+    <h3>2 MONTHS</h3>
+    <div class="price">₹250</div>
+    <button class="buy" onclick="openPay('2 Months',250)">BUY TICKET</button>
+  </div>
+  <div class="card">
+    <h3>PERMANENT</h3>
+    <div class="price">₹500</div>
+    <button class="buy" onclick="openPay('Permanent',500)">BUY TICKET</button>
+  </div>
+</div>
+</div>
 
-<button onclick="submitRequest()">Submit Request</button>
+<!-- PAYMENT MODAL -->
+<div class="modal" id="payModal">
+<div class="box">
+<h3 id="pkgText"></h3>
 
-<hr>
+<img id="qrImg" class="qr">
 
-<h2>🔐 Admin Panel</h2>
+<button class="pay" onclick="payUPI()">PAY NOW</button>
+
+<label>UTR / Transaction ID</label>
+<input id="utr">
+
+<label>Phone Number</label>
+<input id="phone">
+
+<button class="buy" onclick="submitRequest()">SUBMIT FOR VERIFICATION</button>
+<button class="close" onclick="closePay()">Close</button>
+</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="container admin">
+<h2>ADMIN PANEL</h2>
 <input id="adminPass" placeholder="Admin Password">
 <button onclick="openAdmin()">Login</button>
-
-<div id="adminPanel" style="display:none" class="admin-box"></div>
+<div id="adminOrders"></div>
+</div>
 
 <script>
-/* 🔥 FIREBASE CONFIG (ALREADY ADDED) */
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyAibgTvvYMhyWPatChKDHFmiz7cQEi-ylg",
   authDomain: "wolf-panel-2307d.firebaseapp.com",
   projectId: "wolf-panel-2307d",
   storageBucket: "wolf-panel-2307d.firebasestorage.app",
   messagingSenderId: "295285223790",
-  appId: "1:295285223790:web:703bbaa22aa78a1aad917f",
-  measurementId: "G-6J79KMW212"
+  appId: "1:295285223790:web:703bbaa22aa78a1aad917f"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* USER SUBMIT */
+/* PAYMENT FLOW */
+const upiID="pranav2008@ptaxis";
+let pkg="",amount=0;
+
+function openPay(p,a){
+  pkg=p; amount=a;
+  pkgText.innerText=`${pkg} – ₹${amount}`;
+  qrImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiID}&am=${amount}&cu=INR`;
+  payModal.classList.add("active");
+}
+function closePay(){payModal.classList.remove("active")}
+function payUPI(){
+  location.href=`upi://pay?pa=${upiID}&am=${amount}&cu=INR&tn=${pkg}`;
+}
+
+/* SUBMIT REQUEST */
 function submitRequest(){
-  const n = name.value.trim();
-  const p = phone.value.trim();
-  const u = utr.value.trim();
-
-  if(!n || !p || !u){
-    alert("Fill all details");
-    return;
+  if(!utr.value || !phone.value){
+    alert("Fill all details");return;
   }
-
   db.collection("requests").add({
-    name:n,
-    phone:p,
-    utr:u,
+    package:pkg,
+    amount,
+    utr:utr.value,
+    phone:phone.value,
     status:"PENDING",
     time:Date.now()
   });
-
-  alert("Request submitted successfully");
-  name.value=phone.value=utr.value="";
+  alert("Request submitted");
+  utr.value="";phone.value="";
+  closePay();
 }
 
-/* ADMIN LOGIN */
+/* ADMIN */
 function openAdmin(){
-  if(adminPass.value !== "wolfadmin"){
-    alert("Wrong password");
-    return;
-  }
-
-  adminPanel.style.display="block";
-
-  db.collection("requests")
-    .orderBy("time","desc")
-    .onSnapshot(snapshot=>{
-      let html="";
-      snapshot.forEach(doc=>{
-        const d=doc.data();
-        html+=`
-          <div class="card">
-            <b>${d.name}</b><br>
-            📞 ${d.phone}<br>
-            💳 ${d.utr}<br>
-            Status: <b>${d.status}</b><br><br>
-            <button class="approve" onclick="updateStatus('${doc.id}','APPROVED')">Approve</button>
-            <button class="reject" onclick="updateStatus('${doc.id}','REJECTED')">Reject</button>
-          </div>
-        `;
-      });
-      adminPanel.innerHTML=html;
+  if(adminPass.value!=="wolfadmin"){alert("Wrong password");return;}
+  db.collection("requests").orderBy("time","desc")
+  .onSnapshot(snap=>{
+    adminOrders.innerHTML="";
+    snap.forEach(doc=>{
+      const d=doc.data();
+      adminOrders.innerHTML+=`
+        <div class="order">
+          ${d.package} – ₹${d.amount}<br>
+          📞 ${d.phone}<br>
+          💳 ${d.utr}<br>
+          Status: <b>${d.status}</b><br><br>
+          <button class="approve" onclick="update('${doc.id}','APPROVED')">Approve</button>
+          <button class="reject" onclick="update('${doc.id}','REJECTED')">Reject</button>
+        </div>`;
     });
+  });
 }
-
-/* UPDATE STATUS */
-function updateStatus(id,status){
-  db.collection("requests").doc(id).update({status});
+function update(id,s){
+  db.collection("requests").doc(id).update({status:s});
 }
 </script>
 
