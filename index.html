@@ -12,411 +12,62 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary: #0a0a0f;
-  --secondary: #151522;
-  --accent: #ff4655;
-  --accent-glow: rgba(255, 70, 85, 0.3);
-  --neon-blue: #00f3ff;
-  --neon-purple: #b967ff;
-  --text: #e2e8f0;
-  --text-dim: #94a3b8;
-  --card-bg: rgba(21, 21, 34, 0.9);
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  --primary:#0a0a0f;--secondary:#151522;--accent:#ff4655;--accent-glow:rgba(255,70,85,0.3);
+  --neon-blue:#00f3ff;--neon-purple:#b967ff;--text:#e2e8f0;--text-dim:#94a3b8;
+  --card-bg:rgba(21,21,34,0.9);--success:#10b981;--warning:#f59e0b;--danger:#ef4444;
 }
-
-body{
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--primary);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(255, 70, 85, 0.05) 0%, transparent 20%),
-    radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.05) 0%, transparent 20%);
-}
-
-/* Header & Decorative Elements */
-.header-container{
-  text-align: center;
-  padding: 30px 20px 20px;
-  position: relative;
-  border-bottom: 1px solid rgba(255, 70, 85, 0.2);
-  background: rgba(10, 10, 15, 0.8);
-  backdrop-filter: blur(10px);
-}
-
-.header-container::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent), var(--neon-blue), var(--neon-purple));
-}
-
-h1{
-  font-size: 3rem;
-  background: linear-gradient(to right, #fff, var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
-  text-shadow: 0 0 15px var(--accent-glow);
-  letter-spacing: 1px;
-}
-
-.tagline{
-  color: var(--text-dim);
-  font-size: 1.1rem;
-  margin-bottom: 20px;
-}
-
-/* Main Container */
-.container{
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Package Cards */
-.cards{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
-  margin: 40px 0;
-  padding: 10px;
-}
-
-.card{
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 25px 20px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(5px);
-}
-
-.card::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
-  transition: left 0.5s ease;
-}
-
-.card:hover::before{
-  left: 100%;
-}
-
-.card:hover{
-  transform: translateY(-10px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 70, 85, 0.3);
-}
-
-.card h3{
-  font-size: 1.8rem;
-  margin-bottom: 15px;
-  color: var(--text);
-  font-weight: 600;
-}
-
-.duration{
-  font-size: 0.9rem;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 5px;
-}
-
-.price{
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin: 15px 0;
-  background: linear-gradient(to right, var(--accent), var(--neon-blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 10px rgba(255, 70, 85, 0.3);
-}
-
-/* Buttons */
-button{
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  font-family: inherit;
-}
-
-.buy{
-  background: linear-gradient(135deg, var(--accent), #ff2e4a);
-  color: white;
-  padding: 14px 25px;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  width: 100%;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.buy::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-  z-index: -1;
-}
-
-.buy:hover::before{
-  left: 100%;
-}
-
-.buy:hover{
-  box-shadow: 0 0 20px var(--accent-glow);
-  transform: scale(1.03);
-}
-
-.pay{
-  background: linear-gradient(135deg, var(--success), #0ea674);
-  color: white;
-  padding: 15px 25px;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  width: 100%;
-  margin: 20px 0 10px;
-}
-
-.pay:hover{
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-  transform: scale(1.03);
-}
-
-.close{
-  background: rgba(55, 65, 81, 0.7);
-  color: var(--text);
-  padding: 12px 25px;
-  border-radius: 10px;
-  width: 100%;
-  margin-top: 10px;
-}
-
-.close:hover{
-  background: rgba(75, 85, 99, 0.7);
-}
-
-/* Modal */
-.modal{
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-}
-
-.modal.active{display: flex}
-
-.box{
-  background: var(--card-bg);
-  padding: 30px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 450px;
-  border: 1px solid rgba(255, 70, 85, 0.2);
-  box-shadow: 0 0 40px rgba(255, 70, 85, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.box::before{
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 6px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--accent), var(--neon-blue));
-}
-
-.box h3{
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-  color: var(--text);
-  text-align: center;
-}
-
-.qr{
-  width: 220px;
-  display: block;
-  margin: 15px auto;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  padding: 10px;
-  background: white;
-}
-
-/* Input Fields */
-label{
-  display: block;
-  margin-top: 20px;
-  color: var(--text);
-  font-weight: 500;
-}
-
-input{
-  width: 100%;
-  padding: 14px;
-  margin-top: 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(10, 10, 15, 0.7);
-  color: var(--text);
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-input:focus{
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-/* Admin Panel */
-.admin{
-  margin-top: 60px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 30px;
-}
-
-.admin h2{
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: var(--text);
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.admin h2::after{
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
-}
-
-#adminPass{
-  max-width: 300px;
-  margin: 0 auto 20px;
-  display: block;
-}
-
-.order{
-  background: var(--card-bg);
-  padding: 20px;
-  margin-top: 15px;
-  border-radius: 12px;
-  border-left: 4px solid var(--warning);
-}
-
-.order.approved{border-left-color: var(--success)}
-.order.rejected{border-left-color: var(--danger)}
-
-.approve{
-  background: var(--success);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  margin-right: 10px;
-  margin-top: 10px;
-}
-
-.reject{
-  background: var(--danger);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.approve:hover, .reject:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Status Badges */
-.status-badge{
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-left: 10px;
-}
-
-.status-pending{
-  background: rgba(245, 158, 11, 0.2);
-  color: var(--warning);
-}
-
-.status-approved{
-  background: rgba(16, 185, 129, 0.2);
-  color: var(--success);
-}
-
-.status-rejected{
-  background: rgba(239, 68, 68, 0.2);
-  color: var(--danger);
-}
-
-/* Responsive */
-@media (max-width: 768px){
-  h1{font-size: 2.2rem}
-  .cards{grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))}
-  .price{font-size: 2.2rem}
-  .box{padding: 20px}
-}
-
-/* Animations */
-@keyframes pulse {
-  0% {box-shadow: 0 0 0 0 rgba(255, 70, 85, 0.4)}
-  70% {box-shadow: 0 0 0 10px rgba(255, 70, 85, 0)}
-  100% {box-shadow: 0 0 0 0 rgba(255, 70, 85, 0)}
-}
-
-.pulse{
-  animation: pulse 2s infinite;
-}
-
-/* Game Icons */
-.icon{
-  display: inline-block;
-  margin-right: 8px;
-  font-size: 1.2rem;
-}
+body{font-family:'Segoe UI',sans-serif;background:var(--primary);color:var(--text);min-height:100vh;overflow-x:hidden;
+background-image:radial-gradient(circle at 10% 20%, rgba(255,70,85,0.05) 0%, transparent 20%),radial-gradient(circle at 90% 80%, rgba(0,243,255,0.05) 0%, transparent 20%);}
+.header-container{text-align:center;padding:30px 20px 20px;position:relative;border-bottom:1px solid rgba(255,70,85,0.2);background:rgba(10,10,15,0.8);backdrop-filter:blur(10px);}
+.header-container::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg, var(--accent), var(--neon-blue), var(--neon-purple));}
+h1{font-size:3rem;background:linear-gradient(to right,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px;text-shadow:0 0 15px var(--accent-glow);letter-spacing:1px;}
+.tagline{color:var(--text-dim);font-size:1.1rem;margin-bottom:20px;}
+.container{max-width:1200px;margin:0 auto;padding:20px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:25px;margin:40px 0;padding:10px;}
+.card{background:var(--card-bg);border-radius:16px;padding:25px 20px;text-align:center;border:1px solid rgba(255,255,255,0.05);transition:all 0.3s ease;position:relative;overflow:hidden;backdrop-filter:blur(5px);}
+.card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--neon-blue),transparent);transition:left 0.5s ease;}
+.card:hover::before{left:100%;}
+.card:hover{transform:translateY(-10px);box-shadow:0 10px 25px rgba(0,0,0,0.5);border-color:rgba(255,70,85,0.3);}
+.card h3{font-size:1.8rem;margin-bottom:15px;color:var(--text);font-weight:600;}
+.duration{font-size:0.9rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.price{font-size:2.8rem;font-weight:700;margin:15px 0;background:linear-gradient(to right,var(--accent),var(--neon-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 10px rgba(255,70,85,0.3);}
+button{border:none;cursor:pointer;font-weight:600;transition:all 0.3s ease;font-family:inherit;}
+.buy{background:linear-gradient(135deg,var(--accent),#ff2e4a);color:white;padding:14px 25px;border-radius:10px;font-size:1.1rem;width:100%;letter-spacing:0.5px;position:relative;overflow:hidden;z-index:1;}
+.buy::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left 0.5s ease;z-index:-1;}
+.buy:hover::before{left:100%;}
+.buy:hover{box-shadow:0 0 20px var(--accent-glow);transform:scale(1.03);}
+.pay{background:linear-gradient(135deg,var(--success),#0ea674);color:white;padding:15px 25px;border-radius:10px;font-size:1.2rem;width:100%;margin:20px 0 10px;}
+.pay:hover{box-shadow:0 0 20px rgba(16,185,129,0.4);transform:scale(1.03);}
+.close{background:rgba(55,65,81,0.7);color:var(--text);padding:12px 25px;border-radius:10px;width:100%;margin-top:10px;}
+.close:hover{background:rgba(75,85,99,0.7);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(5px);}
+.modal.active{display:flex;}
+.box{background:var(--card-bg);padding:30px;border-radius:16px;width:90%;max-width:450px;border:1px solid rgba(255,70,85,0.2);box-shadow:0 0 40px rgba(255,70,85,0.2);position:relative;overflow:hidden;}
+.box::before{content:'';position:absolute;top:0;left:0;width:6px;height:100%;background:linear-gradient(to bottom,var(--accent),var(--neon-blue));}
+.box h3{font-size:1.8rem;margin-bottom:20px;color:var(--text);text-align:center;}
+.qr{width:220px;display:block;margin:15px auto;border-radius:10px;border:2px solid rgba(255,255,255,0.1);padding:10px;background:white;}
+label{display:block;margin-top:20px;color:var(--text);font-weight:500;}
+input{width:100%;padding:14px;margin-top:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(10,10,15,0.7);color:var(--text);font-size:1rem;transition:all 0.3s ease;}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.admin{margin-top:60px;border-top:1px solid rgba(255,255,255,0.1);padding-top:30px;}
+.admin h2{font-size:2rem;margin-bottom:20px;color:var(--text);text-align:center;position:relative;display:inline-block;left:50%;transform:translateX(-50%);}
+.admin h2::after{content:'';position:absolute;bottom:-8px;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--neon-blue),transparent);}
+.order{background:var(--card-bg);padding:20px;margin-top:15px;border-radius:12px;border-left:4px solid var(--warning);}
+.order.approved{border-left-color:var(--success);}
+.order.rejected{border-left-color:var(--danger);}
+.approve{background:var(--success);color:white;padding:10px 20px;border-radius:8px;margin-right:10px;margin-top:10px;}
+.reject{background:var(--danger);color:white;padding:10px 20px;border-radius:8px;margin-top:10px;}
+.approve:hover,.reject:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+.status-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.85rem;font-weight:600;margin-left:10px;}
+.status-pending{background:rgba(245,158,11,0.2);color:var(--warning);}
+.status-approved{background:rgba(16,185,129,0.2);color:var(--success);}
+.status-rejected{background:rgba(239,68,68,0.2);color:var(--danger);}
+@media(max-width:768px){h1{font-size:2.2rem}.cards{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}.price{font-size:2.2rem}.box{padding:20px}}
+.message{margin-top:15px;text-align:center;font-weight:600;}
+.message.success{color:var(--success);}
+.message.error{color:var(--danger);}
 </style>
 </head>
-
 <body>
 
 <div class="header-container">
@@ -425,31 +76,30 @@ input:focus{
 </div>
 
 <div class="container">
-  <!-- PACKAGES -->
   <div class="cards">
     <div class="card">
       <div class="duration">BASIC ACCESS</div>
       <h3>15 DAYS</h3>
-      <div class="price">₹80</div>
-      <button class="buy" onclick="openPay('15 Days',80)">BUY TICKET</button>
+      <div class="price">₹150</div>
+      <button class="buy" onclick="openPay('15 Days',150)">BUY TICKET</button>
     </div>
     <div class="card">
       <div class="duration">STANDARD ACCESS</div>
       <h3>1 MONTH</h3>
-      <div class="price">₹150</div>
-      <button class="buy" onclick="openPay('1 Month',150)">BUY TICKET</button>
+      <div class="price">₹300</div>
+      <button class="buy" onclick="openPay('1 Month',300)">BUY TICKET</button>
     </div>
     <div class="card">
       <div class="duration">EXTENDED ACCESS</div>
       <h3>2 MONTHS</h3>
-      <div class="price">₹250</div>
-      <button class="buy" onclick="openPay('2 Months',250)">BUY TICKET</button>
+      <div class="price">₹450</div>
+      <button class="buy" onclick="openPay('2 Months',450)">BUY TICKET</button>
     </div>
     <div class="card">
       <div class="duration">ULTIMATE ACCESS</div>
       <h3>PERMANENT</h3>
-      <div class="price">₹500</div>
-      <button class="buy pulse" onclick="openPay('Permanent',500)">BUY TICKET</button>
+      <div class="price">₹1000</div>
+      <button class="buy pulse" onclick="openPay('Permanent',1000)">BUY TICKET</button>
     </div>
   </div>
 </div>
@@ -457,20 +107,16 @@ input:focus{
 <!-- PAYMENT MODAL -->
 <div class="modal" id="payModal">
   <div class="box">
-    <h3 id="pkgText">15 DAYS – ₹80</h3>
-    
+    <h3 id="pkgText">15 DAYS – ₹150</h3>
     <img id="qrImg" class="qr" alt="UPI QR Code">
-    
     <button class="pay" onclick="payUPI()">PAY NOW</button>
-    
     <label>UTR / Transaction ID</label>
     <input id="utr" placeholder="Enter UTR/Transaction ID">
-    
     <label>Phone Number</label>
     <input id="phone" placeholder="Enter your phone number" type="tel">
-    
     <button class="buy" onclick="submitRequest()">SUBMIT FOR VERIFICATION</button>
     <button class="close" onclick="closePay()">Close</button>
+    <div id="payMsg" class="message"></div>
   </div>
 </div>
 
@@ -483,104 +129,68 @@ input:focus{
 </div>
 
 <script>
-/* FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyAibgTvvYMhyWPatChKDHFmiz7cQEi-ylg",
-  authDomain: "wolf-panel-2307d.firebaseapp.com",
-  projectId: "wolf-panel-2307d",
-  storageBucket: "wolf-panel-2307d.firebasestorage.app",
-  messagingSenderId: "295285223790",
-  appId: "1:295285223790:web:703bbaa22aa78a1aad917f"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+firebase.initializeApp({
+  apiKey:"AIzaSyAibgTvvYMhyWPatChKDHFmiz7cQEi-ylg",
+  authDomain:"wolf-panel-2307d.firebaseapp.com",
+  projectId:"wolf-panel-2307d"
+});
+const db=firebase.firestore();
 
-/* PAYMENT FLOW */
+const payModal=document.getElementById("payModal");
+const pkgText=document.getElementById("pkgText");
+const qrImg=document.getElementById("qrImg");
+const utr=document.getElementById("utr");
+const phone=document.getElementById("phone");
+const payMsg=document.getElementById("payMsg");
+const adminPass=document.getElementById("adminPass");
+const adminOrders=document.getElementById("adminOrders");
+
 const upiID="pranav2008@ptaxis";
 let pkg="",amount=0;
 
-function openPay(p,a){
-  pkg=p; amount=a;
-  pkgText.innerText=`${pkg} – ₹${amount}`;
-  qrImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upiID}&am=${amount}&cu=INR`;
-  payModal.classList.add("active");
-}
-function closePay(){
-  payModal.classList.remove("active");
-  utr.value="";
-  phone.value="";
-}
-function payUPI(){
-  location.href=`upi://pay?pa=${upiID}&am=${amount}&cu=INR&tn=${pkg}`;
-}
+// Payment modal
+window.openPay=function(p,a){pkg=p;amount=a;pkgText.innerText=`${pkg} – ₹${amount}`;qrImg.src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent('upi://pay?pa='+upiID+'&am='+amount+'&cu=INR')}`;payMsg.innerText="";payMsg.className="message";payModal.classList.add("active");}
+window.closePay=function(){payModal.classList.remove("active");utr.value="";phone.value="";payMsg.innerText="";payMsg.className="message";}
+window.payUPI=function(){window.location.href=`upi://pay?pa=${upiID}&am=${amount}&cu=INR&tn=${encodeURIComponent(pkg)}`}
 
-/* SUBMIT REQUEST */
-function submitRequest(){
-  if(!utr.value || !phone.value){
-    alert("Please fill all details before submitting");
-    return;
-  }
-  
-  if(phone.value.length !== 10 || isNaN(phone.value)){
-    alert("Please enter a valid 10-digit phone number");
-    return;
-  }
-  
-  db.collection("requests").add({
-    package:pkg,
-    amount,
-    utr:utr.value,
-    phone:phone.value,
-    status:"PENDING",
-    time:Date.now()
+// Submit request
+window.submitRequest=function(){
+  payMsg.innerText="";payMsg.className="message";
+  if(!utr.value.trim()||!phone.value.trim()){payMsg.innerText="❌ Fill all details";payMsg.className="message error";return;}
+  if(!/^\d{10}$/.test(phone.value)){payMsg.innerText="❌ Invalid 10-digit phone";payMsg.className="message error";return;}
+  db.collection("requests").where("utr","==",utr.value.trim()).get().then(snap=>{
+    if(!snap.empty){payMsg.innerText="❌ UTR already submitted";payMsg.className="message error";return;}
+    db.collection("requests").add({package:pkg,amount:amount,utr:utr.value.trim(),phone:phone.value.trim(),status:"PENDING",time:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{
+      payMsg.innerText="✅ Request submitted";payMsg.className="message success";setTimeout(closePay,2000);
+    }).catch(err=>{console.error(err);payMsg.innerText="❌ Submission failed";payMsg.className="message error";});
   });
-  
-  alert("Request submitted successfully! We'll verify your payment soon.");
-  closePay();
 }
 
-/* ADMIN */
-function openAdmin(){
-  if(adminPass.value!=="wolfadmin"){
-    alert("Wrong password");
-    return;
-  }
-  
-  db.collection("requests").orderBy("time","desc")
-  .onSnapshot(snap=>{
+// Admin panel
+window.openAdmin=function(){
+  if(adminPass.value!=="wolfadmin"){alert("Wrong password");return;}
+  db.collection("requests").orderBy("time","desc").onSnapshot(snap=>{
     adminOrders.innerHTML="";
-    if(snap.empty){
-      adminOrders.innerHTML=`<div class="order">No pending requests</div>`;
-      return;
-    }
-    
+    if(snap.empty){adminOrders.innerHTML=`<div class="order">No requests</div>`;return;}
     snap.forEach(doc=>{
       const d=doc.data();
-      const statusClass = d.status === "APPROVED" ? "approved" : d.status === "REJECTED" ? "rejected" : "";
-      const statusBadge = `<span class="status-badge status-${d.status.toLowerCase()}">${d.status}</span>`;
-      
+      const statusClass=d.status==="APPROVED"?"approved":d.status==="REJECTED"?"rejected":"";
+      const submitted=d.time?.toDate?d.time.toDate().toLocaleString():"Pending...";
       adminOrders.innerHTML+=`
         <div class="order ${statusClass}">
-          <strong>${d.package}</strong> – ₹${d.amount} ${statusBadge}<br>
-          <span class="icon">📞</span> ${d.phone}<br>
-          <span class="icon">💳</span> ${d.utr}<br>
-          <small>Submitted: ${new Date(d.time).toLocaleString()}</small><br><br>
-          ${d.status === "PENDING" ? `
-            <button class="approve" onclick="update('${doc.id}','APPROVED')">Approve</button>
-            <button class="reject" onclick="update('${doc.id}','REJECTED')">Reject</button>
-          ` : ''}
+          <b>${d.package}</b> – ₹${d.amount} <span class="status-badge status-${d.status.toLowerCase()}">${d.status}</span><br>
+          📞 ${d.phone}<br>
+          💳 ${d.utr}<br>
+          <small>${submitted}</small><br><br>
+          ${d.status==="PENDING"?`<button class="approve" onclick="updateStatus('${doc.id}','APPROVED')">Approve</button>
+          <button class="reject" onclick="updateStatus('${doc.id}','REJECTED')">Reject</button>`:""}
         </div>`;
     });
   });
-  
-  adminPass.value = "";
+  adminPass.value="";
 }
 
-function update(id,s){
-  if(confirm(`Are you sure you want to mark this request as ${s}?`)){
-    db.collection("requests").doc(id).update({status:s});
-  }
-}
+window.updateStatus=function(id,status){if(confirm(`Mark as ${status}?`)){db.collection("requests").doc(id).update({status});}}
 </script>
 
 </body>
